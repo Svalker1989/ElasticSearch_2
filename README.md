@@ -61,28 +61,58 @@ ind-3	2	4
 При проектировании кластера Elasticsearch нужно корректно рассчитывать количество реплик и шард, иначе возможна потеря данных индексов, вплоть до полной, при деградации системы.  
   
 ### Задача 3
-В этом задании вы научитесь:
-
-создавать бэкапы данных,
-восстанавливать индексы из бэкапов.
-Создайте директорию {путь до корневой директории с Elasticsearch в образе}/snapshots.
-
-Используя API, зарегистрируйте эту директорию как snapshot repository c именем netology_backup.
-
-Приведите в ответе запрос API и результат вызова API для создания репозитория.
-
+В этом задании вы научитесь:  
+  
+создавать бэкапы данных,  
+восстанавливать индексы из бэкапов.  
+  
+Создайте директорию {путь до корневой директории с Elasticsearch в образе}/snapshots.  
+Используя API, зарегистрируйте эту директорию как snapshot repository c именем netology_backup.  
+Приведите в ответе запрос API и результат вызова API для создания репозитория.  
+Перед добавлением необходимо добавить в `elasticsearch.yml` директиву `path.repo=/usr/share/elasticsearch/snapshots/`  
+  
+```
+curl -X PUT "172.17.0.2:9200/_snapshot/netology_backup?pretty" -H 'Content-Type: application/json' -d'
+{
+  "type": "fs",
+  "settings": {
+    "location": "/usr/share/elasticsearch/snapshots/"
+  }
+}
+'
+```
+  
 Создайте индекс test с 0 реплик и 1 шардом и приведите в ответе список индексов.
-
-Создайте snapshot состояния кластера Elasticsearch.
-
-Приведите в ответе список файлов в директории со snapshot.
-
-Удалите индекс test и создайте индекс test-2. Приведите в ответе список индексов.
-
-Восстановите состояние кластера Elasticsearch из snapshot, созданного ранее.
-
-Приведите в ответе запрос к API восстановления и итоговый список индексов.
-
-Подсказки:
-
+```
+curl -X PUT "172.17.0.2:9200/test?pretty" -H 'Content-Type: application/json' -d'
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 1,  
+      "number_of_replicas": 0 
+    }
+  }
+}
+'
+```
+Список индексов:  
+![]()  
+Создайте snapshot состояния кластера Elasticsearch.  
+`curl -X PUT "172.17.0.2:9200/_snapshot/netology_backup/str_snapshot?pretty"`  
+Приведите в ответе список файлов в директории со snapshot.  
+![]()  
+Удалите индекс test и создайте индекс test-2. Приведите в ответе список индексов.  
+Удаление индекса `curl -X DELETE "172.17.0.2:9200/test/?pretty"`  
+![]()  
+Восстановите состояние кластера Elasticsearch из snapshot, созданного ранее.  
+Приведите в ответе запрос к API восстановления и итоговый список индексов.  
+```
+curl -X POST "172.17.0.2:9200/_snapshot/netology_backup/str_snapshot/_restore?pretty" -H 'Content-Type: application/json' -d'
+{
+  "indices": "test"
+}
+'
+```
+![]()  
+Подсказки:  
 возможно, вам понадобится доработать elasticsearch.yml в части директивы path.repo и перезапустить Elasticsearch.
