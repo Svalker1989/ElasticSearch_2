@@ -19,7 +19,7 @@
 * ссылку на образ в репозитории dockerhub  
 `docker push svalker/str_elasticsearch:V1`  
 [docker.io image](https://hub.docker.com/layers/svalker/str_elasticsearch/V1/images/sha256-d592a30f5faeef6dde1b42a20fa85a2666681552cf34f9cc174b2b5aec43863b?context=repo)  
-ответ Elasticsearch на запрос пути / в json-виде.
+* ответ Elasticsearch на запрос пути / в json-виде.  
 ![](https://github.com/Svalker1989/ElasticSearch_2/blob/main/Z1.PNG)  
 Подсказки:  
 возможно, вам понадобится установка пакета perl-Digest-SHA для корректной работы пакета shasum,  
