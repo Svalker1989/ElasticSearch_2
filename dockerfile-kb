@@ -1,0 +1,48 @@
+#Этап 1. Готовим файлы для установки эластика. Директива FROM указывает какой базовый образ использовать. Директива AS используется для мультистейд>
+FROM centos:7 AS prep_files
+#Скачиваем архив с эластиком в папку
+COPY kibana-7.14.0-linux-x86_64.tar.gz . /opt/
+#Создаем папку и назначем её рабочей папкой, чтобы дальнейшие инструкции выполнялись в этой папке.
+RUN mkdir /usr/share/kibana
+WORKDIR /usr/share/kibana
+# --strip-components=1 при распаковке убирает папку верхнего уровня и распаковывает все что в ней.
+RUN tar --strip-components=1 -zxf /opt/kibana-7.14.0-linux-x86_64.tar.gz
+RUN chmod -R g=u /usr/share/kibana
+RUN find /usr/share/kibana -type d -exec chmod g+s {} \;
+#Этап 2. Устанавливает эластик, открываем порт, и запускаем в фоновом режиме.
+FROM centos:7
+# container creator
+MAINTAINER StrekozovVA
+#Так можно определять переменные, которые будут доступны запущенным контейнерам.
+ENV ELSTIC_CONTAINER true
+
+COPY --from=prep_files --chown=1000:0 /usr/share/kibana /usr/share/kibana
+
+#Добавляем в переменную PATH новый путь
+WORKDIR /usr/share/kibana
+ENV PATH=/usr/share/kibana/bin:$PATH
+
+RUN ln -s /usr/share/kibana /opt/kibana && \
+    chown -R 1000:0 . && \
+    chmod -R g=u /usr/share/kibana && \
+    find /usr/share/kibana -type d -exec chmod g+s {}
+
+COPY --chown=1000:0 kibana.yml /usr/share/kibana/config/
+
+# Add the launcher/wrapper script. It knows how to interpret environment
+# variables and translate them to Kibana CLI options.
+COPY --chown=1000:0 kibana-docker /usr/local/bin/
+
+RUN chmod g+ws /usr/share/kibana && \
+    find /usr/share/kibana -gid 0 -and -not -perm /g+w -exec chmod g+w {} \;
+
+RUN find /usr/share/kibana -gid 0 -and -not -perm /g+w -exec chmod g+w {} \; && \
+    groupadd --gid 1000 kibana && \
+      useradd --uid 1000 --gid 1000 \
+      --home-dir /usr/share/kibana --no-create-home kibana
+USER 1000
+
+RUN chmod +x /usr/local/bin/kibana-docker
+RUN export NODE_OPTIONS="--max-old-space-size=4096"
+RUN /usr/local/bin/kibana-docker --optimize
+CMD ["/usr/local/bin/kibana-docker"]
