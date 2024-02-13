@@ -2,18 +2,21 @@
 В этом задании вы потренируетесь в:    
 * установке Elasticsearch  
 * первоначальном конфигурировании Elasticsearch  
-* запуске Elasticsearch в Docker.  
+* запуске Elasticsearch в Docker.
+  
 Используя Docker-образ centos:7 как базовый и документацию по установке и запуску Elastcisearch:  
 * составьте Dockerfile-манифест для Elasticsearch  
 * соберите Docker-образ и сделайте push в ваш docker.io-репозиторий,  
-* запустите контейнер из получившегося образа и выполните запрос пути / c хост-машины.  
+* запустите контейнер из получившегося образа и выполните запрос пути / c хост-машины.
+  
 Требования к elasticsearch.yml:  
 * данные path должны сохраняться в /var/lib,  
-* имя ноды должно быть netology_test.  
+* имя ноды должно быть netology_test.
+  
 В ответе приведите:  
-* текст Dockerfile-манифеста,  
+* текст Dockerfile-манифеста  
 [dockerfile](https://github.com/Svalker1989/ElasticSearch_2/blob/main/dockerfile)  
-ссылку на образ в репозитории dockerhub,  
+* ссылку на образ в репозитории dockerhub  
 `docker push svalker/str_elasticsearch:V1`  
 [docker.io image](https://hub.docker.com/layers/svalker/str_elasticsearch/V1/images/sha256-d592a30f5faeef6dde1b42a20fa85a2666681552cf34f9cc174b2b5aec43863b?context=repo)  
 ответ Elasticsearch на запрос пути / в json-виде.
